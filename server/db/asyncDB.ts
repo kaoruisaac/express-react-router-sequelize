@@ -1,4 +1,6 @@
 import './models/Demo';
+import './models/User';
+import './models/Employee';
 
 import sequelize from './sequelize';
 
