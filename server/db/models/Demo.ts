@@ -8,4 +8,10 @@ class Demo extends Model {
 
 Demo.init({
   name: { type: DataTypes.STRING, allowNull: false },
-}, { sequelize, modelName: 'demo' });
+}, {
+  sequelize,
+  tableName: 'demos',
+  modelName: 'demo',
+});
+
+export default Demo;

@@ -1,6 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../sequelize';
-import { encrypt } from 'server/service/bcrypt';
+import { compare, encrypt } from 'server/services/bcrypt';
+import hashIds from 'server/services/hashId';
+import JsonUser from '~/JsonModels/JsonUser';
 
 class User extends Model {
   public id: number;
@@ -10,6 +12,18 @@ class User extends Model {
   public password: string;
   public createdAt: Date;
   public updatedAt: Date;
+
+  verifyPassword(password: string): boolean {
+    return compare(password, this.password);
+  }
+
+  toJSON(): JsonUser {
+    return new JsonUser().load({
+      hashId: hashIds.encode(this.id),
+      name: this.name,
+      email: this.email,
+    });
+  }
 }
 
 User.init({

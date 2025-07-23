@@ -1,13 +1,14 @@
 import jwt from 'jsonwebtoken';
 import Cookies from 'cookies';
-import User from '../db/models/User';
+import { Request, Response } from 'express';
 import Employee from '../db/models/Employee';
+import JsonUser from '~/JsonModels/JsonUser';
 
 const { JWT_SECRET } = process.env;
 
 // User token
 
-export const wrapUserIntoCookie = (req: Request, res: Response, user: User) => {
+export const wrapUserIntoCookie = (req: Request, res: Response, user: JsonUser) => {
   const token = jwt.sign({ ...user }, JWT_SECRET, { expiresIn: 60 * 60 * 24 * 30 });
   const cookies = new Cookies(req, res);
   cookies.set('verify-token', token, { maxAge: 1000 * 60 * 60 * 24 * 30 });
@@ -18,7 +19,7 @@ export const clearUserCookie = (req: Request, res: Response) => {
   cookies.set('verify-token', null);
 }
 
-export const verifyUser = (req: Request, res: Response) => new Promise<{ token: string, user: User }>((r) => {
+export const verifyUser = (req: Request, res: Response) => new Promise<{ token: string, user: JsonUser }>((r) => {
   const cookies = new Cookies(req, res);
   const token = cookies.get('verify-token');
   if (token) {
@@ -26,7 +27,7 @@ export const verifyUser = (req: Request, res: Response) => new Promise<{ token: 
       if (err) {
         r(null);
       } else {
-        r({ token, user: decoded as User });
+        r({ token, user: decoded as JsonUser });
       }
     });
   } else {

@@ -1,6 +1,12 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../sequelize';
-import { encrypt, compare } from '../../service/bcrypt';
+import { encrypt, compare } from '../../services/bcrypt';
+
+enum EMPLOYEE_ROLES {
+  ADMIN = 'admin',
+  EMPLOYEE = 'employee',
+}
+const ROLES = Object.values(EMPLOYEE_ROLES);
 
 class Employee extends Model {
   public id: number;
@@ -17,7 +23,7 @@ class Employee extends Model {
 Employee.init({
   name: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: true, unique: true },
-  roles: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false, defaultValue: [] },
+  roles: { type: DataTypes.ARRAY(DataTypes.ENUM(...ROLES)), allowNull: false, defaultValue: [] },
   password: { type: DataTypes.STRING, allowNull: false },
 }, {
   sequelize,
