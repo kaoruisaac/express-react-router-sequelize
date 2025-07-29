@@ -8,7 +8,6 @@ class User extends Model {
   public id: number;
   public name: string;
   public email: string;
-  public googleId: string;
   public password: string;
   public createdAt: Date;
   public updatedAt: Date;
@@ -18,10 +17,11 @@ class User extends Model {
   }
 
   toJSON(): JsonUser {
+    const value = { ...this.get() };
     return new JsonUser().load({
-      hashId: hashIds.encode(this.id),
-      name: this.name,
-      email: this.email,
+      hashId: hashIds.encode(value.id),
+      name: value.name,
+      email: value.email,
     });
   }
 }
@@ -37,13 +37,13 @@ User.init({
   tableName: 'users',
   hooks: {
     beforeCreate: async (user: User) => {
-      if (user.password) {
-        user.password = encrypt(user.password);
+      if (user.dataValues.password) {
+        user.dataValues.password = encrypt(user.dataValues.password);
       }
     },
     beforeUpdate: async (user: User) => {
-      if (user.changed('password')) {
-        user.password = encrypt(user.password);
+      if (user.dataValues.changed('password')) {
+        user.dataValues.password = encrypt(user.dataValues.password);
       }
     }
   },

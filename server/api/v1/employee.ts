@@ -1,56 +1,41 @@
 import express from 'express';
+import validator from 'shared/validator';
 import Employee from '../../db/models/Employee';
+import RequestError, { ReasonPhrases, StatusCodes } from 'shared/RequestError';
 
 const router = express.Router();
 
 // 創建員工
-router.post('/create', async (req, res) => {
+router.post('/create', async (req, res, next) => {
   try {
     const { name, email, roles, password } = req.body;
 
     // 驗證必填欄位
-    if (!name || !password) {
-      return res.status(400).json({
-        success: false,
-        message: '姓名和密碼為必填欄位'
-      });
-    }
+    validator.employee.create.validateSync(req.body, { abortEarly: false });
 
     // 檢查 email 是否已存在
     if (email) {
       const existingEmployee = await Employee.findOne({ where: { email } });
       if (existingEmployee) {
-        return res.status(400).json({
-          success: false,
-          message: '此 email 已被使用'
+        throw new RequestError({
+          errorMessage: '此 email 已被使用',
+          status: StatusCodes.BAD_REQUEST,
         });
       }
     }
 
     // 創建員工（密碼會自動被 bcrypt 加密）
-    const employee = await Employee.create({
+    await Employee.create({
       name,
       email,
       roles: roles || [],
       password
     });
 
-    // 回傳結果（不包含密碼）
-    const employeeData = employee.toJSON();
-    delete employeeData.password;
-
-    res.status(201).json({
-      success: true,
-      message: '員工創建成功',
-      data: employeeData
-    });
+    res.status(201).send(ReasonPhrases.CREATED);
 
   } catch (error) {
-    console.error('創建員工時發生錯誤:', error);
-    res.status(500).json({
-      success: false,
-      message: '創建員工時發生錯誤'
-    });
+    next(error);
   }
 });
 

@@ -5,12 +5,19 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  LinksFunction,
+  useLoaderData,
+  LoaderFunction,
 } from "react-router";
-import { Route } from "./+types/root";
+import i18next from "i18next";
+import { I18nextProvider } from "react-i18next";
 import "./app.css";
+import { HeroUIProvider } from "@heroui/react";
+import PopUpProvider from "./containers/PopUp/PopUpProvider";
+import { useEffect } from "react";
+import { ServerContextProvider } from "./containers/serverContext";
 
-
-export const links: Route.LinksFunction = () => [
+export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -23,6 +30,10 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export const loader: LoaderFunction = ({ context }) => {
+  return context;
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -33,19 +44,39 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
-        <ScrollRestoration />
-        <Scripts />
+            {children}
+            <ScrollRestoration />
+            <Scripts />
       </body>
     </html>
   );
 }
 
 export default function App() {
-  return <Outlet />;
+  const context = useLoaderData<any>();
+  useEffect(() => {
+    const setViewPort = () => {
+      document.body.style.setProperty('--vh', `${window.innerHeight / 100}px`);
+      document.body.style.setProperty('--vw', `${window.innerWidth / 100}px`);
+    }
+    window.addEventListener('resize', setViewPort);
+    setViewPort();
+    return () => window.removeEventListener('resize', setViewPort);
+  }, []);
+  return (
+    <I18nextProvider i18n={i18next}>
+      <ServerContextProvider context={context}>
+        <PopUpProvider>
+          <HeroUIProvider>
+            <Outlet />
+          </HeroUIProvider>
+        </PopUpProvider>
+      </ServerContextProvider>
+    </I18nextProvider>
+  );
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export const ErrorBoundary = ({ error }) => {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;

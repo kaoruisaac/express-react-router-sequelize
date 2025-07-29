@@ -13,6 +13,7 @@ export interface RequestErrorInterface {
 class RequestError extends Error implements RequestErrorInterface{
     #language: string;
     errorMessage: string;
+    status: StatusCodes;
     constructor({
         language = 'en-US',
         errors = [],

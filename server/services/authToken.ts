@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import Cookies from 'cookies';
 import { Request, Response } from 'express';
-import Employee from '../db/models/Employee';
 import JsonUser from '~/JsonModels/JsonUser';
+import JsonEmployee from '~/JsonModels/JsonEmployee';
 
 const { JWT_SECRET } = process.env;
 
@@ -37,7 +37,7 @@ export const verifyUser = (req: Request, res: Response) => new Promise<{ token: 
 
 // Admin token
 
-export const wrapEmployeeIntoCookie = (req: Request, res: Response, employee: Employee) => {
+export const wrapEmployeeIntoCookie = (req: Request, res: Response, employee: JsonEmployee) => {
   const token = jwt.sign({ ...employee }, JWT_SECRET, { expiresIn: 60 * 60 * 24 * 30 });
   const cookies = new Cookies(req, res);
   cookies.set('employee-token', token, { maxAge: 1000 * 60 * 60 * 24 * 30 });
@@ -48,7 +48,7 @@ export const clearEmployeeCookie = (req: Request, res: Response) => {
   cookies.set('employee-token', null);
 }
 
-export const verifyEmployee = (req: Request, res: Response) => new Promise<{ token: string, employee: Employee }>((r) => {
+export const verifyEmployee = (req: Request, res: Response) => new Promise<{ token: string, employee: JsonEmployee }>((r) => {
   const cookies = new Cookies(req, res);
   const token = cookies.get('employee-token');
   if (token) {
@@ -56,7 +56,7 @@ export const verifyEmployee = (req: Request, res: Response) => new Promise<{ tok
       if (err) {
         r(null);
       } else {
-        r({ token, employee: decoded as Employee });
+        r({ token, employee: decoded as JsonEmployee });
       }
     });
   } else {

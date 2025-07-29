@@ -1,43 +1,77 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../sequelize';
 import { encrypt, compare } from '../../services/bcrypt';
-
-enum EMPLOYEE_ROLES {
-  ADMIN = 'admin',
-  EMPLOYEE = 'employee',
-}
-const ROLES = Object.values(EMPLOYEE_ROLES);
+import hashIds from 'server/services/hashId';
+import JsonEmployee from '~/JsonModels/JsonEmployee';
+import { ROLES } from 'shared/roles';
+import RequestError, { StatusCodes } from 'shared/RequestError';
 
 class Employee extends Model {
   public id: number;
   public name: string;
   public email: string;
-  public roles: string[];
+  public roles: string;
   public password: string;
 
   verifyPassword(password: string): boolean {
-    return compare(password, this.password);
+    return compare(password, this.dataValues.password);
+  }
+
+  toJSON(): JsonEmployee {
+    const value = { ...this.get() };
+    return new JsonEmployee().load({
+      hashId: hashIds.encode(value.id),
+      name: value.name,
+      email: value.email,
+      roles: value.roles.split(','),
+    });
   }
 }
 
 Employee.init({
-  name: { type: DataTypes.STRING, allowNull: false },
-  email: { type: DataTypes.STRING, allowNull: true, unique: true },
-  roles: { type: DataTypes.ARRAY(DataTypes.ENUM(...ROLES)), allowNull: false, defaultValue: [] },
-  password: { type: DataTypes.STRING, allowNull: false },
+  name: {
+    allowNull: false,
+    type: DataTypes.STRING
+  },
+  email: {
+    unique: true,
+    allowNull: false,
+    type: DataTypes.STRING,
+  },
+  roles: {
+    allowNull: false,
+    type: DataTypes.STRING,
+  },
+  password: {
+    allowNull: false,
+    type: DataTypes.STRING,
+  },
 }, {
   sequelize,
   modelName: 'Employee',
   tableName: 'employees',
   hooks: {
     beforeCreate: async (employee: Employee) => {
-      if (employee.password) {
-        employee.password = encrypt(employee.password);
+      if (employee.dataValues.password) {
+        employee.dataValues.password = encrypt(employee.dataValues.password);
       }
+      if (employee.dataValues.roles.split(',').some((role) => !ROLES.includes(role))) {
+        throw new RequestError({
+          errorMessage: 'Invalid role',
+          status: StatusCodes.BAD_REQUEST,
+        });
+      }
+      employee.email = employee.dataValues.email;
     },
     beforeUpdate: async (employee: Employee) => {
-      if (employee.changed('password')) {
-        employee.password = encrypt(employee.password);
+      if (employee.dataValues.changed('password')) {
+        employee.dataValues.password = encrypt(employee.dataValues.password);
+      }
+      if (employee.dataValues.roles.split(',').some((role) => !ROLES.includes(role))) {
+        throw new RequestError({
+          errorMessage: 'Invalid role',
+          status: StatusCodes.BAD_REQUEST,
+        });
       }
     }
   }

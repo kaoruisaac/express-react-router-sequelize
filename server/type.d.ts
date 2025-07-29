@@ -1,5 +1,5 @@
-import JsonUser from 'app/JsonModels/JsonUser';
-import JsonEmployee from 'app/JsonModels/JsonEmployee';
+import JsonUser from '~/JsonModels/JsonUser';
+import JsonEmployee from '~/JsonModels/JsonEmployee';
 
 declare global {
   namespace Express {

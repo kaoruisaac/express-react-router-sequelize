@@ -1,16 +1,17 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { RemixComponentCssLoader } from 'remix-component-css-loader'
-import config from "./config.json";
+import tailwindcss from "@tailwindcss/vite";
+import { RemixComponentCssLoader } from "remix-component-css-loader";
 
 export default defineConfig({
   plugins: [
     RemixComponentCssLoader(),
     reactRouter(),
     tsconfigPaths(),
+    tailwindcss(),
   ],
   define: {
-    'APP_VERSION': JSON.stringify(config.APP_VERSION),
+    'APP_VERSION': JSON.stringify(process.env.APP_VERSION),
   },
 });
