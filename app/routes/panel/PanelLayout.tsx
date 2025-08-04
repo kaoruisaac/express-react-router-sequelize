@@ -11,7 +11,7 @@ const PanelLayout = () => {
 
   const navigationItems = [
     { name: t("home"), href: "/panel", icon: "🏠" },
-    { name: t("employees"), href: "/panel/employee", icon: "👥" },
+    { name: t("employees"), href: "/panel/employees", icon: "👥" },
     { name: t("logout"), icon: "🚪", onClick: () => { window.location.href = "/api/auth/panel/logout" } },
   ];
 

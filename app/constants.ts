@@ -1,0 +1,5 @@
+export enum PAGE_MODE {
+  MODE_CREATE,
+  MODE_EDIT,
+  MODE_VIEW,
+}
