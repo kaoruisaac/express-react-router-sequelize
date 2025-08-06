@@ -5,16 +5,21 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@heroui/react";
 
 
-const NotifyPopUp = forwardPopup(({ message }, popup) => {
+const NotifyPopUp = forwardPopup(({ message, title, onConfirm } : { message: string, title?: string, onConfirm?: () => void }, popup) => {
     const { t } = useTranslation();
     return (
     <Styled>
-        <PopUpWindow PopUp={popup} header={t('notify')}>
+        <PopUpWindow PopUp={popup} header={title || t('notify')}>
             <section>
                 {message}
             </section>
             <footer>
-                <Button onClick={popup.close}>{t('close')}</Button>
+                <Button variant="bordered" onPress={popup.close}>{t('close')}</Button>
+                {
+                    onConfirm && (
+                        <Button onPress={async () => { await onConfirm(); popup.close() }}>{t('ok')}</Button>
+                    )
+                }
             </footer>
         </PopUpWindow>
     </Styled>

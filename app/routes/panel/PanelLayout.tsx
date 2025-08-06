@@ -1,19 +1,33 @@
 import { useTranslation } from "react-i18next";
 import { Outlet, Link, useLocation } from "react-router";
 import { Styled } from "remix-component-css-loader"
+import { RiLogoutBoxRLine } from "@remixicon/react";
 import { useServerContext } from "~/containers/serverContext";
 import "./PanelLayout.css";
+import usePopUp from "~/containers/PopUp/usePopUp";
+import { useCallback } from "react";
+import NotifyPopUp from "~/components/NotifyPopUp";
 
 const PanelLayout = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const { employee } = useServerContext();
+  const { PopUpBox } = usePopUp();
 
   const navigationItems = [
     { name: t("home"), href: "/panel", icon: "🏠" },
     { name: t("employees"), href: "/panel/employees", icon: "👥" },
-    { name: t("logout"), icon: "🚪", onClick: () => { window.location.href = "/api/auth/panel/logout" } },
   ];
+
+  const confirmLogout = useCallback(() => {
+    PopUpBox(NotifyPopUp, {
+      title: t("logout"),
+      message: t("confirm-logout"),
+      onConfirm: () => {
+        window.location.href = "/api/auth/panel/logout";
+      },
+    });
+  }, [PopUpBox, t])
 
   return (
     <Styled>
@@ -33,7 +47,6 @@ const PanelLayout = () => {
                 <Link
                   key={item.href}
                   to={item.href}
-                  onClick={item.onClick}
                   className={`panel-nav-item ${location.pathname === item.href ? 'active' : ''}`}
                 >
                   <span className="panel-nav-icon">{item.icon}</span>
@@ -53,6 +66,13 @@ const PanelLayout = () => {
                 <p className="panel-user-name">{employee?.name || '---'}</p>
                 <p className="panel-user-role">{employee?.roles || '---'}</p>
               </div>
+                             <button
+                 onClick={confirmLogout}
+                 className="panel-logout-btn"
+                 title={t("logout")}
+               >
+                 <RiLogoutBoxRLine className="panel-logout-icon" />
+               </button>
             </div>
           </div>
         </aside>

@@ -5,7 +5,7 @@ import JsonEmployee from "~/JsonModels/JsonEmployee";
 const EmployeesTable = ({ data }: { data: JsonEmployee[] }) => {
   return (
     <Styled>
-      <Table aria-label="員工列表" className="min-h-[400px]">
+      <Table removeWrapper aria-label="員工列表" className="min-h-[400px]">
         <TableHeader>
           <TableColumn>姓名</TableColumn>
           <TableColumn>電子郵件</TableColumn>

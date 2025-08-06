@@ -1,4 +1,7 @@
 {
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always"
+    },
     "typescript.tsdk": "node_modules\\typescript\\lib",
-    "LocalePath": "./public/locales",
+    "LocalePath": "./public/locales"
 }

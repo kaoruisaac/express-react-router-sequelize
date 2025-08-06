@@ -7,7 +7,7 @@ import usePopUp from '~/containers/PopUp/usePopUp';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
-type AnyObject<F extends Record<any, any>> = Partial<F> & {
+export type AnyObject<F extends Record<any, any>> = Partial<F> & {
   [key: string]: any;
   [key: number]: any;
   [key: symbol]: any;

@@ -1,9 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Styled } from "remix-component-css-loader";
 import { 
-  Card, 
-  CardBody, 
-  CardHeader, 
   Input,
   Select,
   SelectItem
@@ -51,8 +48,6 @@ const EmployeesSearchPage = () => {
   
   const {
     data,
-    SearchButton,
-    SearchPageNav,
     CreateButton,
     SearchQueryBlock,
     SearchResultBlock,
@@ -76,67 +71,41 @@ const EmployeesSearchPage = () => {
           </h1>
           <CreateButton />
         </div>
-
         {/* 查詢條件區塊 */}
         <SearchQueryBlock>
-          <Card className="shadow-sm search-card">
-            <CardHeader className="pb-3">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                查詢條件
-              </h2>
-            </CardHeader>
-            <CardBody>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Input
-                  label="姓名"
-                  value={name}
-                  errorMessage={Vname}
-                  onChange={(e) => changeForm({ name: e.target.value })}
-                />
-                <Input
-                  label="電子郵件"
-                  value={email}
-                  errorMessage={Vemail}
-                  onChange={(e) => changeForm({ email: e.target.value })}
-                />
-                <Select
-                  label="角色"
-                  errorMessage={Vrole}
-                  selectedKeys={role ? [role] : []}
-                  onSelectionChange={(keys) => {
-                    const selectedKey = Array.from(keys)[0] as string;
-                    changeForm({ role: selectedKey || "" });
-                  }}
-                >
-                  {roleOptions.map((role) => (
-                    <SelectItem key={role.value}>
-                      {role.label}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
-              <div className="flex gap-2 mt-4">
-                <SearchButton />
-              </div>
-            </CardBody>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Input
+              label="姓名"
+              value={name}
+              errorMessage={Vname}
+              onChange={(e) => changeForm({ name: e.target.value })}
+            />
+            <Input
+              label="電子郵件"
+              value={email}
+              errorMessage={Vemail}
+              onChange={(e) => changeForm({ email: e.target.value })}
+            />
+            <Select
+              label="角色"
+              errorMessage={Vrole}
+              selectedKeys={role ? [role] : []}
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                changeForm({ role: selectedKey || "" });
+              }}
+            >
+              {roleOptions.map((role) => (
+                <SelectItem key={role.value}>
+                  {role.label}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
         </SearchQueryBlock>
-
         {/* 查詢結果清單 */}
         <SearchResultBlock>
-          <Card className="shadow-sm search-card">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  查詢結果
-                </h2>
-              </div>
-            </CardHeader>
-            <CardBody>
-              <EmployeesTable data={data} />
-              <SearchPageNav />
-            </CardBody>
-          </Card>
+          <EmployeesTable data={data} />
         </SearchResultBlock>
       </div>
     </Styled>
